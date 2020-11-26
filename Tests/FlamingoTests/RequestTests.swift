@@ -1,0 +1,41 @@
+import XCTest
+@testable import Flamingo
+
+extension BaseURL {
+    static let unsecurePokeApi = BaseURL(host: "pokeapi.co", isSecure: false)
+    static let pokeApi = BaseURL(host: "pokeapi.co")
+}
+
+extension Endpoint {
+    static let unsecurePokemons = Endpoint(baseURL: .unsecurePokeApi, path: "/api/v2/pokemon")
+    static let pokemons = Endpoint(baseURL: .pokeApi, path: "/api/v2/pokemon")
+}
+
+final class RequestTests: XCTestCase {
+    
+    func test_RequestFormatShouldBeCorrect() {
+        let request = Request(method: .get, endpoint: .pokemons)
+        
+        XCTAssertNoThrow(try request.url())
+        XCTAssertEqual(try request.url().absoluteString, "https://pokeapi.co/api/v2/pokemon")
+    }
+    
+    func test_UnsecureRequestFormatShouldBeCorrect() {
+        let request = Request(method: .get, endpoint: .unsecurePokemons)
+        
+        XCTAssertNoThrow(try request.url())
+        XCTAssertEqual(try request.url().absoluteString, "http://pokeapi.co/api/v2/pokemon")
+    }
+    
+    func test_URLRequestConversionShouldNotThrow() {
+        let request = Request(method: .get, endpoint: .pokemons, queryParameters: [
+            QueryParameter(key: "offset", value: 20)
+        ], headers: [
+            ContentType.json,
+            Authentication.bearer(token: "somerandomtoken")
+        ])
+
+        XCTAssertNoThrow(try request.toURLRequest())
+    }
+    
+}
