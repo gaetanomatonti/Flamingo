@@ -1,3 +1,4 @@
+@available(iOS 11.0, *)
 public struct BaseURL {
     public var host: String
     public var isSecure: Bool

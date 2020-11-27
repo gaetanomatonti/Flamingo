@@ -1,10 +1,12 @@
 import Foundation
 
+@available(iOS 11.0, *)
 public protocol HeaderField {
     var key: String { get }
     var value: String { get }
 }
 
+@available(iOS 11.0, *)
 extension Array where Element == HeaderField {
     var headersFields: [String: String] {
         var dict: [String: String] = [:]
@@ -15,6 +17,7 @@ extension Array where Element == HeaderField {
     }
 }
 
+@available(iOS 11.0, *)
 public enum Authentication: HeaderField {
     case bearer(token: String), basic(token: String)
     
@@ -28,6 +31,7 @@ public enum Authentication: HeaderField {
     }
 }
 
+@available(iOS 11.0, *)
 public enum ContentType: HeaderField {
     case json
     

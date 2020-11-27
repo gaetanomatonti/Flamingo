@@ -1,5 +1,6 @@
 import Foundation
 
+@available(iOS 11.0, *)
 public struct Request: CustomStringConvertible {
     public let method: HTTPMethod
     public let endpoint: Endpoint
