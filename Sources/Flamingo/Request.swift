@@ -8,7 +8,7 @@ public struct Request: CustomStringConvertible {
     /// The endpoint of the request.
     public let endpoint: Endpoint
     /// The query parameters of the request.
-    public var queryParameters: [QueryParameter]?
+    public var queryParameters: Set<QueryParameter>?
     /// The headers of the request.
     public var headers: [HeaderField]?
     /// The query items of the request.
@@ -26,7 +26,7 @@ public struct Request: CustomStringConvertible {
     ///   - endpoint: The endpoint of the request.
     ///   - queryParameters: The query parameters of the request (optional).
     ///   - headers: The headers of the request (optional).
-    public init(method: HTTPMethod, endpoint: Endpoint, queryParameters: [QueryParameter]? = nil, headers: [HeaderField]? = nil) {
+    public init(method: HTTPMethod, endpoint: Endpoint, queryParameters: Set<QueryParameter>? = nil, headers: [HeaderField]? = nil) {
         self.method = method
         self.endpoint = endpoint
         self.queryParameters = queryParameters
@@ -36,25 +36,17 @@ public struct Request: CustomStringConvertible {
     /// Adds new query parameters to the request.
     /// - Parameter parameters: The query parameters to add to the request.
     /// - Returns: A copy of the original request with added query parameters.
-    public func adding(query parameters: [QueryParameter]) -> Self {
-        if queryParameters == nil {
-            return replacing(query: parameters)
-        } else {
-            var newRequest = self
-            newRequest.queryParameters?.append(contentsOf: parameters)
-            return newRequest
-        }
-    }
-    
-    /// Replaces the query parameters of a request.
-    /// - Parameter parameters: The new query parameters of the request.
-    /// - Returns: A copy of the request with new query parameters.
-    public func replacing(query parameters: [QueryParameter]) -> Self {
+    public func appending(query parameters: Set<QueryParameter>) -> Self {
         var newRequest = self
-        newRequest.queryParameters = parameters
+        
+        if newRequest.queryParameters == nil {
+            newRequest.queryParameters = []
+        }
+
+        parameters.forEach { newRequest.queryParameters?.update(with: $0) }
         return newRequest
     }
-        
+            
     /// Creates a `URLComponents` object from the attributes of the request.
     /// - Returns: A `URLComponents` object representing the url for the request.
     func urlComponents() -> URLComponents {
