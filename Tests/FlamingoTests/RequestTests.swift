@@ -38,4 +38,35 @@ final class RequestTests: XCTestCase {
         XCTAssertNoThrow(try request.toURLRequest())
     }
     
+    func test_AddingQueryParametersToRequest_QueryItemsShouldNotBeNil() {
+        let request = Request(method: .get, endpoint: .pokemons)
+            .adding(query: [
+                QueryParameter(key: "offset", value: 20)
+            ])
+        
+        XCTAssertNotNil(request.queryItems)
+    }
+    
+    func test_AddingQueryParametersToRequest_QueryItemsCountShouldBeCorrect() {
+        let request = Request(method: .get, endpoint: .pokemons)
+            .adding(query: [
+                QueryParameter(key: "offset", value: 20)
+            ])
+        
+        guard let items = request.queryItems else { XCTFail("queryItems on Request should not be nil"); return }
+        XCTAssertEqual(items.count, 1)
+    }
+    
+    func test_AddingQueryParametersToRequestWithQueryParameters_QueryItemsCountShouldBeCorrect() {
+        let request = Request(method: .get, endpoint: .pokemons, queryParameters: [
+            QueryParameter(key: "limit", value: 20)
+        ])
+        .adding(query: [
+            QueryParameter(key: "offset", value: 20)
+        ])
+        
+        guard let items = request.queryItems else { XCTFail("queryItems on Request should not be nil"); return }
+        XCTAssertEqual(items.count, 2)
+    }
+    
 }
