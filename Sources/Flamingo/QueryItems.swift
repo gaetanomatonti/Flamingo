@@ -25,3 +25,13 @@ extension Set where Element == QueryParameter {
         map { URLQueryItem(name: $0.key, value: $0.value.description) }
     }
 }
+
+@available(iOS 11.0, *)
+extension Array where Element == URLQueryItem {
+    var queryParameters: [QueryParameter] {
+        compactMap {
+            guard let value = $0.value else { return nil }
+            return QueryParameter(key: $0.name, value: value)
+        }
+    }
+}

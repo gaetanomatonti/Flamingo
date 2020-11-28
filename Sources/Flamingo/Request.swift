@@ -13,7 +13,8 @@ public struct Request: CustomStringConvertible {
     public var headers: [HeaderField]?
     /// The query items of the request.
     public var queryItems: [URLQueryItem]? {
-        queryParameters?.urlQueryItems
+        get { queryParameters?.urlQueryItems }
+        set { newValue.flatMap { queryParameters = Set($0.queryParameters) } }
     }
     
     public var description: String {
@@ -31,6 +32,19 @@ public struct Request: CustomStringConvertible {
         self.endpoint = endpoint
         self.queryParameters = queryParameters
         self.headers = headers
+    }
+    
+    /// Constructs a `Request` object from a `URL`.
+    /// - Parameters:
+    ///   - method: The HTTP method of the request.
+    ///   - url: The URL of the request
+    public init?(method: HTTPMethod, url: URL) {
+        self.method = method
+        
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let host = components.host else { return nil }
+        self.endpoint = Endpoint(baseURL: BaseURL(host: host), path: url.path)
+        self.queryItems = components.queryItems
     }
     
     /// Adds new query parameters to the request.
@@ -61,7 +75,7 @@ public struct Request: CustomStringConvertible {
     /// Creates a `URL` object for the request.
     /// - Throws: `URLError`
     /// - Returns: A `URL` for the request.
-    func url() throws -> URL {
+    func makeURL() throws -> URL {
         guard let url = urlComponents().url else { throw URLError.invalidURLFormat }
         return url
     }
@@ -71,7 +85,7 @@ public struct Request: CustomStringConvertible {
     /// - Throws: `URLError`
     /// - Returns: A `URLRequest` object representing the request.
     public func toURLRequest(body: Data? = nil) throws -> URLRequest {
-        var request = URLRequest(url: try url())
+        var request = URLRequest(url: try makeURL())
         request.httpBody = body
         request.httpMethod = method.rawValue
         request.allHTTPHeaderFields = headers?.headersFields

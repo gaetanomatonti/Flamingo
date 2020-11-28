@@ -16,15 +16,15 @@ final class RequestTests: XCTestCase {
     func test_RequestFormatShouldBeCorrect() {
         let request = Request(method: .get, endpoint: .pokemons)
         
-        XCTAssertNoThrow(try request.url())
-        XCTAssertEqual(try request.url().absoluteString, "https://pokeapi.co/api/v2/pokemon")
+        XCTAssertNoThrow(try request.makeURL())
+        XCTAssertEqual(try request.makeURL().absoluteString, "https://pokeapi.co/api/v2/pokemon")
     }
     
     func test_UnsecureRequestFormatShouldBeCorrect() {
         let request = Request(method: .get, endpoint: .unsecurePokemons)
         
-        XCTAssertNoThrow(try request.url())
-        XCTAssertEqual(try request.url().absoluteString, "http://pokeapi.co/api/v2/pokemon")
+        XCTAssertNoThrow(try request.makeURL())
+        XCTAssertEqual(try request.makeURL().absoluteString, "http://pokeapi.co/api/v2/pokemon")
     }
     
     func test_URLRequestConversionShouldNotThrow() {
@@ -81,6 +81,15 @@ final class RequestTests: XCTestCase {
         
         guard let items = request.queryItems else { XCTFail("queryItems on Request should not be nil"); return }
         XCTAssertTrue(items.contains(URLQueryItem(name: "limit", value: "10")))
+    }
+    
+    func test_RequestFromURL_AttributesShouldBeCorrect() {
+        let request = Request(method: .get, url: URL(string: "https://pokeapi.co/api/v2/pokemon?offset=20&limit=20")!)
+        
+        XCTAssertNotNil(request)
+        XCTAssertEqual(request?.endpoint.baseURL.host, "pokeapi.co")
+        XCTAssertEqual(request?.endpoint.path, "/api/v2/pokemon")
+        XCTAssertEqual(request?.queryParameters, Set([QueryParameter(key: "offset", value: 20), QueryParameter(key: "limit", value: 20)]))
     }
     
 }
