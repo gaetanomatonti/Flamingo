@@ -5,6 +5,11 @@ public struct QueryParameter: Hashable, Equatable {
     let key: String
     let value: LosslessStringConvertible
     
+    public init(key: String, value: LosslessStringConvertible) {
+        self.key = key
+        self.value = value
+    }
+
     public static func ==(lhs: QueryParameter, rhs: QueryParameter) -> Bool {
         lhs.key == rhs.key
     }
