@@ -53,7 +53,11 @@ public struct FlamingoTask {
         completion: @escaping CodableTaskCompletion<D>
     ) throws -> FlamingoTask {
         var copy = self
-        copy.urlSessionDataTask = session.dataTask(with: try request.toURLRequest()) { (data, _, error) in
+        copy.urlSessionDataTask = session.dataTask(with: try request.toURLRequest()) { (data, response, error) in
+            if let error = RequestError.error(from: response) {
+                completion(.failure(error))
+                return
+            }
             if let error = error {
                 completion(.failure(error))
                 return
@@ -62,6 +66,8 @@ public struct FlamingoTask {
                 do {
                     let decodedData = try decoder.decode(responseType, from: data)
                     completion(.success(decodedData))
+                } catch let error as DecodingError {
+                    completion(.failure(RequestError.decodingError(error)))
                 } catch {
                     completion(.failure(error))
                 }
