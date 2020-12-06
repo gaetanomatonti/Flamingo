@@ -7,6 +7,8 @@ public struct Request: CustomStringConvertible {
     public let method: HTTPMethod
     /// The endpoint of the request.
     public let endpoint: Endpoint
+    /// The body of the request.
+    public var body: Data?
     /// The query parameters of the request.
     public var queryParameters: Set<QueryParameter>?
     /// The headers of the request.
@@ -84,7 +86,7 @@ public struct Request: CustomStringConvertible {
     /// - Parameter body: An optional `Data` object to send as the body of the request.
     /// - Throws: `URLError`
     /// - Returns: A `URLRequest` object representing the request.
-    public func toURLRequest(body: Data? = nil) throws -> URLRequest {
+    public func toURLRequest() throws -> URLRequest {
         var request = URLRequest(url: try makeURL())
         request.httpBody = body
         request.httpMethod = method.rawValue

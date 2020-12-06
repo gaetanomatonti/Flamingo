@@ -20,14 +20,16 @@ final class FlamingoTests: XCTestCase {
     
     func testCodableTaskWithCorrectRequestShouldNotThrow() {
         let request = Request(method: .get, endpoint: .users)
-        XCTAssertNoThrow(try Flamingo.codableTask(request, responseType: [User].self) { _ in })
+        let task = FlamingoTask(request: request)
+        
+        XCTAssertNoThrow(try task.decode([User].self, completion: { _ in }))
     }
     
     func testCodableTaskRequestShouldExecuteCorrectly() throws {
         // Given
         let request = Request(method: .get, endpoint: .users)
-        let expectation = XCTestExpectation(description: "Reqeust should execute correctly")
-        let task = try Flamingo.codableTask(request, responseType: [User].self, completion: { result in
+        let expectation = XCTestExpectation(description: "Request should execute correctly")
+        let task = try FlamingoTask(request: request).decode([User].self, completion: { result in
             // Then
             switch result {
                 case .success(let users):
@@ -39,9 +41,9 @@ final class FlamingoTests: XCTestCase {
         })
         
         // When
-        task.resume()
+        task.start()
         
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 5)
     }
     
 }
