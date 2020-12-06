@@ -1,12 +1,12 @@
 import XCTest
 @testable import Flamingo
 
-extension BaseURL {
+fileprivate extension BaseURL {
     static let unsecurePokeApi = BaseURL(host: "pokeapi.co", isSecure: false)
     static let pokeApi = BaseURL(host: "pokeapi.co")
 }
 
-extension Endpoint {
+fileprivate extension Endpoint {
     static let unsecurePokemons = Endpoint(baseURL: .unsecurePokeApi, path: "/api/v2/pokemon")
     static let pokemons = Endpoint(baseURL: .pokeApi, path: "/api/v2/pokemon")
 }
