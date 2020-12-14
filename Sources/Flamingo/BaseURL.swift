@@ -1,6 +1,8 @@
 @available(iOS 11.0, *)
 public struct BaseURL {
+    /// The host subcomponent of a url.
     public var host: String
+    /// Whether the connection should use SSL.
     public var isSecure: Bool
     
     var scheme: String {

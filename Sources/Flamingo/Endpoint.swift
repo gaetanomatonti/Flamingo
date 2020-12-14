@@ -1,6 +1,8 @@
 @available(iOS 11.0, *)
 public struct Endpoint {
+    /// The base url of a url.
     public let baseURL: BaseURL
+    /// The path subcomponent of a url.
     @Path public var path: String
     
     public init(baseURL: BaseURL, path: String) {
