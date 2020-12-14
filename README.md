@@ -1,3 +1,7 @@
 # Flamingo
 
-A description of this package.
+A simple URLRequest formatter and URLSessionDataTask wrapper.
+
+## Documentation
+
+Coming soon.

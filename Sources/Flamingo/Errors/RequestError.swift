@@ -13,18 +13,27 @@ public enum RequestError: Swift.Error {
     case decodingError(DecodingError)
     /// Catch all the errors we're not handling
     case unhandledResponse
+    /// Indicates that an internet connection is not available.
+    case noInternetConnection
 }
 
 extension RequestError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .unknownResponse: return "Unknown response"
-        case .networkError(let error): return "Network Error: " + error.localizedDescription
-        case .requestError(let code): return "Request error: \(code)"
-        case .serverError(let code): return "Server error: \(code)"
-        case .decodingError(let error):
-            return "Decoding error: " + decodingErrorMessage(from: error)
-        case .unhandledResponse: return "Unhandled Response"
+            case .unknownResponse:
+                return "Unknown response"
+            case .networkError(let error):
+                return "Network Error: " + error.localizedDescription
+            case .requestError(let code):
+                return "Request error: \(code)"
+            case .serverError(let code):
+                return "Server error: \(code)"
+            case .decodingError(let error):
+                return "Decoding error: " + decodingErrorMessage(from: error)
+            case .unhandledResponse:
+                return "Unhandled Response"
+            case .noInternetConnection:
+                return "The internet connection appears to be offline."
         }
     }
     
@@ -43,13 +52,24 @@ extension RequestError: LocalizedError {
 
 public extension RequestError {
     static func error(from response: URLResponse?) -> RequestError? {
-        guard let http = response as? HTTPURLResponse else { return .unknownResponse }
+        guard let http = response as? HTTPURLResponse else { return nil }
         
         switch http.statusCode {
         case 200...299: return nil
         case 400...499: return .requestError(http.statusCode)
         case 500...599: return .serverError(http.statusCode)
         default: return .unhandledResponse
+        }
+    }
+    
+    static func error(from error: Error?) -> RequestError? {
+        guard let error = error as NSError? else { return nil }
+        
+        switch error.code {
+            case NSURLErrorNotConnectedToInternet:
+                return .noInternetConnection
+            default:
+                return .networkError(error)
         }
     }
 }

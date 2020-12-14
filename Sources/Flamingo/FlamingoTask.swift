@@ -58,7 +58,7 @@ public struct FlamingoTask {
                 completion(.failure(error))
                 return
             }
-            if let error = error {
+            if let error = RequestError.error(from: error) {
                 completion(.failure(error))
                 return
             }
